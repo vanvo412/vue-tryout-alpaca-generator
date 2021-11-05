@@ -283,7 +283,7 @@ export const ALPACA = [
         directory: "accessories",
         selected: false,
         items: [
-            { id: 0, label: "Default", filename: "default", selected: false },
+            // { id: 0, label: "Default", filename: "default", selected: false },
             { id: 1, label: "Earings", filename: "earings", selected: false },
             { id: 2, label: "Flower", filename: "flower", selected: false },
             { id: 3, label: "Glasses", filename: "glasses", selected: false },

@@ -3,14 +3,28 @@
       <h1 class="font-black text-7xl text-green-800">Alpaca Generator</h1>
       <h2 class="font-black text-4xl text-green-500">by Van Vo</h2>
       <div>
-        <div>
-          <AlpacaArt v-bind:parts="parts"/>
+        <div id="pic" class="relative block">
+
+          <img v-for="(filename,folder,index) in parts"
+               v-bind:key="index"
+               v-bind:src="fetchImg(folder,filename)"
+               class="absolute w-96 h-96"
+               alt=""
+               v-bind:class="{'z-index':index}">
+
+          <img src="./assets/alpaca/nose.png"
+               class="absolute w-96 h-96"
+               alt="" style="z-index: 10">
+
+          <div class="block relative w-96 h-96"></div>
+
         </div>
 
         <div>
           <div>
+            <h3 class="font-black text-xl text-indigo-800 my-3"> Acessorize your Alpaca</h3>
             <button
-                class="border-2 border-indigo-500 rounded-full font-bold text-indigo-500 px-4 py-3 transition duration-300 ease-in-out hover:bg-indigo-500 hover:text-white mr-6"
+                class="m-1 border-2 border-indigo-500 rounded-full font-bold text-indigo-500 px-4 py-3 transition duration-300 ease-in-out hover:bg-indigo-500 hover:text-white mr-6"
                 v-for="a in alpaca"
                 v-on:click="selectButton(a)"
                 v-bind:key="a.id">
@@ -18,15 +32,23 @@
             </button>
           </div>
           <div>
+            <h3 class="font-black text-xl text-indigo-800 my-3"> {{chosenDir.label}}</h3>
             <button
-                class="border-2 border-indigo-500 rounded-full font-bold text-indigo-500 px-4 py-3 transition duration-300 ease-in-out hover:bg-indigo-500 hover:text-white mr-6"
-                v-for="c in chosenDir"
+                class="m-1 border-2 border-indigo-500 rounded-full font-bold text-indigo-500 px-4 py-3 transition duration-300 ease-in-out hover:bg-indigo-500 hover:text-white mr-6"
+                v-for="c in chosenDir.items"
                 v-bind:key="c.id"
                 v-on:click="setFeatures(c)">
               {{c.label}}
             </button>
           </div>
         </div>
+
+<!--        <div>-->
+<!--          <button-->
+<!--              class="mx-1 my-5 border-4 border-green-900 bg-green-900 rounded-full font-bold text-white px-4 py-3 transition duration-300 ease-in-out hover:bg-opacity-0 hover:text-green-900 mr-6"-->
+<!--              v-on:click="download"-->
+<!--          > Download</button>-->
+<!--        </div>-->
       </div>
 
 
@@ -37,43 +59,55 @@
 <script>
 import {ALPACA} from "@/style/alpaca";
 import mergeImage from "merge-image";
-import AlpacaArt from "@/components/AlpacaArt";
+// import AlpacaArt from "@/components/AlpacaArt";
 
 
 export default {
   name: 'App',
-  components: {AlpacaArt},
+  // components: {AlpacaArt},
   data(){
     return {
       alpaca: ALPACA,
       chosenDir: ALPACA[0],
       //all parts of the alpaca
       parts: {
-        // accessories: '',
         backgrounds: 'yellow50',
         ears: 'default',
-        eyes: 'default',
         hair: 'default',
         leg: 'default',
-        mouth: 'default',
         neck: 'default',
+        mouth: 'default',
+        eyes: 'default',
+        accessories: 'glasses',
       },
-      // image: './assets/alpaca/backgrounds/yellow70.png',
+      image: require('@/assets/alpaca/backgrounds/yellow70.png'),
     }
   },
 
   methods:{
     selectButton(inp){
-      this.chosenDir = inp.items;
+      // if(event)
+        this.chosenDir = inp;
+    },
+    fetchImg: function (dir, file) {
+        return require(`@/assets/alpaca/${dir}/${file}.png`) ;
+
     },
     setFeatures(inp){
-      this.parts.this.chosenDir.directory=inp.filename;
+        for(const p in this.parts){
+          if(p===this.chosenDir.directory){
+            this.parts[p]=inp.filename;
+            this.$forceUpdate();
+            // this.image= require(`@/assets/alpaca/${this.chosenDir.directory}/${inp.filename}.png`)
+          }
+        }
+
     },
     download(){
       let imgArray=[];
 
       for (const p in this.parts){
-        imgArray.push(this.fetchImage(Object.keys(p),p));
+        imgArray.push(this.fetchImg(p,this.parts[p]));
       }
 
       return mergeImage([imgArray])
